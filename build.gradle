@@ -1,7 +1,6 @@
 plugins {
-    id("groovy") 
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("io.micronaut.application") version "4.0.4"
+    id("io.micronaut.application") version "4.1.2"
     id("io.micronaut.aot") version "4.0.4"
 }
 
@@ -9,34 +8,39 @@ version = "0.1"
 group = "example"
 
 repositories {
+//    mavenLocal()
+    maven { url "https://s01.oss.sonatype.org/content/repositories/snapshots/" }
     mavenCentral()
 }
 
 dependencies {
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+
     implementation("io.micronaut:micronaut-management")
-    implementation("io.micronaut.micrometer:micronaut-micrometer-core")
-    implementation("io.micronaut.micrometer:micronaut-micrometer-registry-prometheus")
-    implementation("io.micronaut.serde:micronaut-serde-jackson")
-    compileOnly("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut.micrometer:micronaut-micrometer-core:5.1.0-SNAPSHOT")
+
     runtimeOnly("ch.qos.logback:logback-classic")
+
+    testImplementation("io.micronaut:micronaut-http-client")
+    testImplementation("io.micronaut.serde:micronaut-serde-jackson")
     testImplementation("io.micronaut:micronaut-http-client")
 }
-
 
 application {
     mainClass.set("example.Application")
 }
+
 java {
-    sourceCompatibility = JavaVersion.toVersion("17")
-    targetCompatibility = JavaVersion.toVersion("17")
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 graalvmNative.toolchainDetection = false
 micronaut {
     runtime("netty")
-    testRuntime("spock2")
+    testRuntime("junit5")
     processing {
         incremental(true)
         annotations("example.*")
